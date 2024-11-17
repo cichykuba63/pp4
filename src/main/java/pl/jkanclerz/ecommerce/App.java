@@ -5,6 +5,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import pl.jkanclerz.ecommerce.catalog.ArrayListProductStorage;
 import pl.jkanclerz.ecommerce.catalog.ProductCatalog;
+import pl.jkanclerz.ecommerce.sales.SalesFacade;
+import pl.jkanclerz.ecommerce.sales.cart.HashMapCartStorage;
+import pl.jkanclerz.ecommerce.sales.offering.OfferCalculator;
+import pl.jkanclerz.ecommerce.sales.payment.PaymentDetails;
+import pl.jkanclerz.ecommerce.sales.payment.PaymentGateway;
+import pl.jkanclerz.ecommerce.sales.payment.RegisterPaymentRequest;
+import pl.jkanclerz.ecommerce.sales.reservation.ReservationRepository;
 
 import java.math.BigDecimal;
 
@@ -25,5 +32,20 @@ public class App {
         catalog.changePrice(pid2, BigDecimal.valueOf(50.10));
 
         return catalog;
+    }
+
+    @Bean
+    SalesFacade createSales() {
+        return new SalesFacade(
+                new HashMapCartStorage(),
+                new OfferCalculator(),
+                new PaymentGateway() {
+                    @Override
+                    public PaymentDetails registerPayment(RegisterPaymentRequest registerPaymentRequest) {
+                        return null;
+                    }
+                },
+                new ReservationRepository()
+        );
     }
 }
